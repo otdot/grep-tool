@@ -17,7 +17,7 @@ fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 fn find_content_in_file_general_case() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
-    file.write_str("A test\nActual Content\nMore Content\n last line")?;
+    file.write_str("search_file = \"test-sample.txt\"")?;
     let mut cmd = cargo_bin_cmd!("grep_tool");
 
     cmd.arg("Content").arg(file.path());
@@ -29,13 +29,16 @@ fn find_content_in_file_general_case() -> Result<(), Box<dyn std::error::Error>>
 
 #[test]
 fn find_content_in_file_when_empty_string() -> Result<(), Box<dyn std::error::Error>> {
+    
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
-    let content = "A test\nActual Content\nMore Content\nlast line";
+    let content = "search_file = \"test-sample.txt\"";
+    let result = "A test\nActual Content\nMore Content\nlast line";
     file.write_str(content)?;
     let mut cmd = cargo_bin_cmd!("grep_tool");
 
+
     cmd.arg("").arg(file.path());
-    cmd.assert().success().stdout(predicate::str::contains(content));
+    cmd.assert().success().stdout(predicate::str::contains(result));
 
     Ok(())
 }

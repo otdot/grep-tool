@@ -6,7 +6,7 @@ follows the guide in https://rust-cli.github.io/book/index.html
 |Argument|Example|Note|
 |--------|-------|----|
 |Pattern |secret |pattern to look for|
-|Path    |src/main|file where the pattern is searched from|
+|Config_path    |src/main|file where the config file is searched from|
 
 ## Running and building
 
@@ -17,7 +17,7 @@ Use Cargo to compile and run directly in one step:
 cargo run -- secret main.rs
 ```
  - secret is the search pattern.
- - src/main.rs is the file (or folder) path to search.
+ - src/main.rs is the config file path to search.
 
 ### Build a release binary
 Create an optimized executable:
