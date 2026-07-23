@@ -1,0 +1,20 @@
+[
+    {
+        "id": "a1",
+        "key": "my-school",
+        "username": "user1",
+        "password": "pass1"
+    },
+    {
+        "id": "a2",
+        "key": "my-work",
+        "username": "user2",
+        "password": "pass2"
+    },
+    {
+        "id": "a3",
+        "key": "my-platform",
+        "username": "user3",
+        "password": "pass3"
+    }
+]

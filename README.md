@@ -1,12 +1,18 @@
-# grep-like command-line tool
+# Command line interface password manager 
 
-follows the guide in https://rust-cli.github.io/book/index.html
+This is a local password manager that stores passwords in a file. For optimal setup the file should be encryped, but this tool doesn't include encrypting or decrypting the file. This tool should have support to define the schema of the credential objects and basic CRUD opertations. 
+
+|Action|Command|Note|
+|--------|-------|----|
+|GET password | `pwtool get '<pattern>'` | GET a password, if multiple passwords match show password object keys and let user choose which password to copy|
+|SET password | `pwtool set key, username, password ` | SET a password, if a matching key already exists return an error|
+
 
 ## Arguments
 |Argument|Example|Note|
 |--------|-------|----|
 |Pattern |secret |pattern to look for|
-|Config_path    |src/main|file where the config file is searched from|
+|Config_path (optional) |src/main|file where the config file is searched from|
 
 ## Running and building
 
