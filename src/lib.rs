@@ -57,5 +57,5 @@ pub fn check_found_matches() {
 pub fn check_default_config() {
 	let path = PathBuf::from("test-config.toml");
 	let config: Config = crate::load_config(&path).unwrap();
-	assert_eq!(config.search_file.to_str(), Some("src/main.rs"))
+	assert_eq!(config.search_file.to_str(), Some("test-sample.json"))
 }

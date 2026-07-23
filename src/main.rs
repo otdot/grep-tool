@@ -34,7 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 	let mut ctx = ClipboardContext::new()?;
 
 	if list_len == 0 {
-		println!("no entries found with given search argument: {}", &args.pattern);
+		println!("No entries found with given search argument: {}", &args.pattern);
 	} else if list_len == 1 {
 		println!("Found one entry for search argument: {}", &args.pattern);
 		let found_entry: &PwEntry = result.get(0).unwrap();
