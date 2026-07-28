@@ -6,7 +6,7 @@ use predicates::prelude::*; // Used for writing assertions
 fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = cargo_bin_cmd!("pwtool");
 
-    cmd.arg("foobar").arg("test/file/doesnt/exist");
+    cmd.arg("--c").arg("test/file/doesnt/exist").arg("get").arg("--P").arg("test");
     cmd.assert()
         .failure()
         .stderr(predicate::str::contains("could not read file"));
@@ -20,7 +20,7 @@ fn find_content_in_file_general_case() -> Result<(), Box<dyn std::error::Error>>
     file.write_str("search_file = \"test-sample.json\"")?;
     let mut cmd = cargo_bin_cmd!("pwtool");
 
-    cmd.arg("my-school").arg(file.path());
+    cmd.arg("--c").arg(file.path()).arg("get").arg("--P").arg("my-school");
     cmd.assert().success().stdout(predicate::str::contains("Found one entry for search argument"));
 
     Ok(())
@@ -37,7 +37,7 @@ fn find_content_in_file_when_empty_string() -> Result<(), Box<dyn std::error::Er
     let mut cmd = cargo_bin_cmd!("pwtool");
 
 
-    cmd.arg("").arg(file.path());
+    cmd.arg("--c").arg(file.path()).arg("get").arg("--P").arg("");
     cmd.assert().success().stdout(predicate::str::contains(result));
 
     Ok(())
