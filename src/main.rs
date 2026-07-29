@@ -24,7 +24,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             username,
             password,
         } => {
-            pwtool::set_pw(&key, &username, &password, pws, &config.search_file);
+            let _ = pwtool::set_pw(&key, &username, &password, pws, &config.search_file);
         }
     }
 
