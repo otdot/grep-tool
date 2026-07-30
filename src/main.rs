@@ -14,7 +14,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
 
-    let mut pws: Vec<PwEntry> = serde_json::from_str(&contents)?;
+    let pws: Vec<PwEntry> = serde_json::from_str(&contents)?;
     match args.cmd {
         Command::Get { pattern } => {
             pwtool::get_pw(&pattern, pws)?;
