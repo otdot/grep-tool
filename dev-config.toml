@@ -1,1 +1,2 @@
-search_file = "~/.pwtool/config.toml" 
+password_vault_path = "~/.pwtool/config.json" 
+vault_file_type = "json"

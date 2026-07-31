@@ -1,11 +1,15 @@
+pub mod models;
+pub mod persistence;
+
 use anyhow::{Context, Result};
 use std::{error::Error, fs::File, io::Read, path::PathBuf};
 
 use clap::{Parser, Subcommand};
 use cli_clipboard::{ClipboardContext, ClipboardProvider};
-use serde::{Deserialize, Serialize};
 use std::io::{self};
 use uuid::Uuid;
+
+use crate::models::{Config, PwEntry};
 
 pub fn find_matches(pattern: &str, pw_entry: PwEntry, result: &mut Vec<PwEntry>) {
     if matches_to_entry(pattern, &pw_entry) {
@@ -15,11 +19,6 @@ pub fn find_matches(pattern: &str, pw_entry: PwEntry, result: &mut Vec<PwEntry>)
 
 fn matches_to_entry(pattern: &str, pw_entry: &PwEntry) -> bool {
     pw_entry.key.contains(pattern) || pw_entry.username.contains(pattern) || pw_entry.id == pattern
-}
-
-#[derive(Deserialize)]
-pub struct Config {
-    pub search_file: PathBuf,
 }
 
 pub fn load_config(config_path: &std::path::PathBuf) -> Result<Config, Box<dyn Error>> {
@@ -120,13 +119,13 @@ pub fn set_pw(
     username: &str,
     password: &str,
     mut pws: Vec<PwEntry>,
-    pw_file: &std::path::PathBuf,
-) -> Result<(), String> {
+) -> Result<Vec<PwEntry>, String> {
     if pws.iter().any(|entry| entry.key == key) {
         let msg = format!("Entry with key:{} already exists", key);
         println!("{}", &msg);
         return Err(msg);
     }
+
 
     let new_entry = PwEntry {
         id: Uuid::new_v4().to_string(),
@@ -136,21 +135,7 @@ pub fn set_pw(
     };
 
     pws.push(new_entry);
-
-    let new_pws_content =
-        serde_json::to_string_pretty(&pws).expect("Failed to serialize PwEntry list to JSON");
-    std::fs::write(pw_file, new_pws_content).expect("Failed to write updated PwEntry list to file");
-
-    println!("Successfully saved new credentials for key '{}'.", &key);
-    Ok(())
-}
-
-#[derive(Serialize, Deserialize, PartialEq, Debug)]
-pub struct PwEntry {
-    pub id: String,
-    pub key: String,
-    pub username: String,
-    pub password: String,
+    Ok(pws)
 }
 
 #[test]
@@ -174,5 +159,9 @@ pub fn check_found_matches() {
 pub fn check_default_config() {
     let path = PathBuf::from("test-config.toml");
     let config: Config = crate::load_config(&path).unwrap();
-    assert_eq!(config.search_file.to_str(), Some("test-sample.json"))
+    
+    assert_eq!(
+        config.password_vault_path.to_str(),
+        Some("test-sample.json")
+    )
 }

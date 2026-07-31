@@ -1,1 +1,3 @@
-search_file = "test-sample.json"
+#keep the vault_path as 'test-sample.json' for tests
+password_vault_path = "test-sample.json"
+vault_file_type = "csv"

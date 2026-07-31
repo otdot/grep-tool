@@ -3,6 +3,12 @@ use assert_fs::prelude::FileWriteStr;
 // Import cargo_bin_cmd! macro and methods
 use predicates::prelude::*; // Used for writing assertions
 
+
+static DEFAULT_FILE_CONTENTS: &str = r#"
+password_vault_path = "test-sample.json"
+vault_file_type = "json"
+"#;
+
 #[test]
 fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
     let mut cmd = cargo_bin_cmd!("pwtool");
@@ -22,7 +28,7 @@ fn file_doesnt_exist() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 fn find_content_in_file_general_case() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
-    file.write_str("search_file = \"test-sample.json\"")?;
+    file.write_str(DEFAULT_FILE_CONTENTS)?;
     let mut cmd = cargo_bin_cmd!("pwtool");
 
     cmd.arg("--c")
@@ -40,9 +46,8 @@ fn find_content_in_file_general_case() -> Result<(), Box<dyn std::error::Error>>
 #[test]
 fn find_content_in_file_when_empty_string() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
-    let content = "search_file = \"test-sample.json\"";
+    file.write_str(DEFAULT_FILE_CONTENTS)?;
     let result = "Found multiple entries for search argument";
-    file.write_str(content)?;
     let mut cmd = cargo_bin_cmd!("pwtool");
 
     cmd.arg("--c")
@@ -60,8 +65,7 @@ fn find_content_in_file_when_empty_string() -> Result<(), Box<dyn std::error::Er
 #[test]
 fn set_content_when_missing_fields() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.toml")?;
-    let content = "search_file = \"test-sample.json\"";
-    file.write_str(content)?;
+    file.write_str(DEFAULT_FILE_CONTENTS)?;
     let mut cmd = cargo_bin_cmd!("pwtool");
 
     cmd.arg("--c")
@@ -82,9 +86,7 @@ fn set_content_when_missing_fields() -> Result<(), Box<dyn std::error::Error>> {
 #[test]
 fn set_content_in_file_non_unique_key() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
-    let content = "search_file = \"test-sample.json\"";
-    let result = "Found multiple entries for search argument";
-    file.write_str(content)?;
+    file.write_str(DEFAULT_FILE_CONTENTS)?;
     let mut cmd = cargo_bin_cmd!("pwtool");
 
     cmd.arg("--c")
@@ -98,8 +100,7 @@ fn set_content_in_file_non_unique_key() -> Result<(), Box<dyn std::error::Error>
         .arg("password");
 
     cmd.assert()
-        //Tämän ei pitäisi olla success
-        .success()
+        .failure()
         .stdout(predicate::str::contains(
             "Entry with key:my-work already exists",
         ));
@@ -111,7 +112,11 @@ fn set_content_in_file_non_unique_key() -> Result<(), Box<dyn std::error::Error>
 fn set_content_in_file() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
     let pw_entry_file = assert_fs::NamedTempFile::new("test-entries.json")?;
-    let content = format!("search_file = \"{}\"", &pw_entry_file.path().display());
+    let content = format!(
+        "password_vault_path = \"{}\"\nvault_file_type = \"json\"",
+        &pw_entry_file.path().display()
+
+    );
     file.write_str(&content)?;
     pw_entry_file.write_str("[]")?;
     let mut cmd = cargo_bin_cmd!("pwtool");
