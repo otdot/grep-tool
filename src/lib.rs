@@ -64,10 +64,14 @@ pub enum Command {
     Set {
         #[arg(long, alias = "k")]
         key: String,
+        #[arg(long, default_value = "")]
+        url: String,
         #[arg(long, alias = "u")]
         username: String,
         #[arg(long, alias = "p")]
         password: String,
+        #[arg(long, default_value = "", alias = "n")]
+        note: String,
     },
     Get {
         #[arg(long, alias = "P")]
@@ -116,8 +120,10 @@ pub fn get_pw(pattern: &str, pws: Vec<PwEntry>) -> Result<(), Box<dyn Error>> {
 
 pub fn set_pw(
     key: &str,
+    url: &str,
     username: &str,
     password: &str,
+    note: &str,
     mut pws: Vec<PwEntry>,
 ) -> Result<Vec<PwEntry>, String> {
     if pws.iter().any(|entry| entry.key == key) {
@@ -126,12 +132,13 @@ pub fn set_pw(
         return Err(msg);
     }
 
-
     let new_entry = PwEntry {
         id: Uuid::new_v4().to_string(),
         key: key.to_owned(),
+        url: url.to_owned(),
         username: username.to_owned(),
         password: password.to_owned(),
+        note: note.to_owned(),
     };
 
     pws.push(new_entry);
@@ -159,7 +166,7 @@ pub fn check_found_matches() {
 pub fn check_default_config() {
     let path = PathBuf::from("test-config.toml");
     let config: Config = crate::load_config(&path).unwrap();
-    
+
     assert_eq!(
         config.password_vault_path.to_str(),
         Some("test-sample.json")

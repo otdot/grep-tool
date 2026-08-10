@@ -1,6 +1,6 @@
-use std::{error::Error, fs::File, io::Read};
+use std::error::Error;
 
-use anyhow::{Context, Result};
+use anyhow::Result;
 use clap::Parser;
 use pwtool::{
     Cli, Command,
@@ -21,10 +21,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
         Command::Set {
             key,
+            url,
             username,
             password,
+            note,
         } => {
-            let new_pws = pwtool::set_pw(&key, &username, &password, pws)?;
+            let new_pws = pwtool::set_pw(&key, &url, &username, &password, &note, pws)?;
             persistence.save(&config.password_vault_path, &new_pws)?;
             println!("Successfully saved new credentials for key '{}'.", &key);
         }

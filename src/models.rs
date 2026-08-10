@@ -6,8 +6,10 @@ use serde::{Deserialize, Serialize};
 pub struct PwEntry {
     pub id: String,
     pub key: String,
+    pub url: String,
     pub username: String,
     pub password: String,
+    pub note: String,
 }
 
 #[derive(Serialize, Deserialize)]

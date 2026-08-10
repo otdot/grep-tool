@@ -13,7 +13,7 @@ This is a local password manager that stores passwords in a file. For optimal se
 |--------|-------|----|
 |Config_path (optional) |--c, --config_path| `pwtool --c ./config.toml get --P secret` | file where the config file is searched from. Defaults to .pwtool/config.toml.|
 |Pattern |--P, --pattern| `pwtool get --P secret` |pattern to look for|
-|Password entry fields (key, username, password) |--k, --key, --u, --username, --p, --password| `pwtool set --k <key> --u <username> --p <password>` |fields for a new password entry|
+|Password entry fields (key*, url, username, password*, note) (*=required) |--k, --key, --url, --u, --username, --p, --password, --n, --note| `pwtool set --k <key> --url <url> --u <username> --p <password> --n <note>` |fields for a new password entry|
 
 ## Running and building
 

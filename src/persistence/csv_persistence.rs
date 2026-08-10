@@ -22,8 +22,10 @@ impl PersistenceLayer for CsvPersistence {
                 let cred = PwEntry {
                     id: record.get(0).ok_or("Missing ID")?.to_string(),
                     key: record.get(1).ok_or("Missing key")?.to_string(),
-                    username: record.get(2).ok_or("Missing Username")?.to_string(),
-                    password: record.get(3).ok_or("Missing Password Hash")?.to_string(),
+                    url: record.get(2).unwrap_or("").to_string(),
+                    username: record.get(3).unwrap_or("").to_string(),
+                    password: record.get(4).ok_or("Missing Password Hash")?.to_string(),
+                    note: record.get(5).unwrap_or("").to_string(),
                 };
                 credentials.push(cred);
             } else {
@@ -49,10 +51,10 @@ impl PersistenceLayer for CsvPersistence {
             .from_writer(file);
 
         // Write headers (important for schema definition)
-        wtr.write_record(&["id", "key", "username", "password"])?;
+        wtr.write_record(&["id", "key", "url", "username", "password", "note"])?;
 
         for cred in pws {
-            wtr.write_record(&[&cred.id, &cred.key, &cred.username, &cred.password])?;
+            wtr.write_record(&[&cred.id, &cred.key, &cred.url, &cred.username, &cred.password, &cred.note])?;
         }
 
         wtr.flush()?;

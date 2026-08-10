@@ -17,7 +17,6 @@ impl PersistenceLayer for JsonPersistence {
     }
 
     fn save(&self, path: &PathBuf, pws: &Vec<PwEntry>) -> Result<()> {
-
         let file_content = serde_json::to_string_pretty(pws)
             .map_err(|e| anyhow!("Failed to serialize to JSON: {}", e))?;
         std::fs::write(path, file_content)?;
