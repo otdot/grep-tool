@@ -23,4 +23,5 @@ pub enum VaultFileType {
 pub struct Config {
     pub password_vault_path: PathBuf,
     pub vault_file_type: VaultFileType,
+    pub encryption_key: String,
 }

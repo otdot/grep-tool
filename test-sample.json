@@ -1,20 +1,26 @@
 [
-    {
-        "id": "a1",
-        "key": "my-school",
-        "username": "user1",
-        "password": "pass1"
-    },
-    {
-        "id": "a2",
-        "key": "my-work",
-        "username": "user2",
-        "password": "pass2"
-    },
-    {
-        "id": "a3",
-        "key": "my-platform",
-        "username": "user3",
-        "password": "pass3"
-    }
+  {
+    "id": "a1",
+    "key": "my-school",
+    "url": "https://school.example.com",
+    "username": "user1",
+    "password": "ZkvqC9HxkNJd7WDW6uX0JQ==",
+    "note": "This is my school account."
+  },
+  {
+    "id": "a2",
+    "key": "my-work",
+    "url": "",
+    "username": "user2",
+    "password": "q3FLfmGTLZH7urx70zZzjA==",
+    "note": "This is my work account."
+  },
+  {
+    "id": "a3",
+    "key": "my-platform",
+    "url": "https://platform.example.com",
+    "username": "user3",
+    "password": "ZZIUGdqjhqUSfC88mgJNJg==",
+    "note": ""
+  }
 ]

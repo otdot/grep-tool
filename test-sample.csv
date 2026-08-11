@@ -1,4 +1,4 @@
-id,key,username,password
-a1,my-school,user1,pass1
-a2,my-work,user2,pass2
-a3,my-platform,user3,pass3
+id,key,url,username,password,
+a1,my-school,locahlhost:3000,user1,ZkvqC9HxkNJd7WDW6uX0JQ==,local-school
+a2,my-work,,user2,q3FLfmGTLZH7urx70zZzjA==,
+a3,my-platform,,user3,ZZIUGdqjhqUSfC88mgJNJg==,

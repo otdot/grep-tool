@@ -1,3 +1,4 @@
 #keep the vault_path as 'test-sample.json' for tests
-password_vault_path = "test-sample.csv"
-vault_file_type = "csv"
+password_vault_path = "test-sample.json"
+vault_file_type = "json"
+encryption_key = "magickey"

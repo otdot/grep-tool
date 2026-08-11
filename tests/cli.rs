@@ -3,10 +3,11 @@ use assert_fs::prelude::FileWriteStr;
 // Import cargo_bin_cmd! macro and methods
 use predicates::prelude::*; // Used for writing assertions
 
-
+static DEFAULT_ENCRYPTION_KEY: &str = "magickey";
 static DEFAULT_FILE_CONTENTS: &str = r#"
 password_vault_path = "test-sample.json"
 vault_file_type = "json"
+encryption_key = "magickey"
 "#;
 
 #[test]
@@ -99,11 +100,9 @@ fn set_content_in_file_non_unique_key() -> Result<(), Box<dyn std::error::Error>
         .arg("--p")
         .arg("password");
 
-    cmd.assert()
-        .failure()
-        .stdout(predicate::str::contains(
-            "Entry with key:my-work already exists",
-        ));
+    cmd.assert().failure().stdout(predicate::str::contains(
+        "Entry with key:my-work already exists",
+    ));
 
     Ok(())
 }
@@ -113,9 +112,9 @@ fn set_content_in_file() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
     let pw_entry_file = assert_fs::NamedTempFile::new("test-entries.json")?;
     let content = format!(
-        "password_vault_path = \"{}\"\nvault_file_type = \"json\"",
-        &pw_entry_file.path().display()
-
+        "password_vault_path = \"{}\"\nvault_file_type = \"json\"\nencryption_key = \"{}\"",
+        &pw_entry_file.path().display(),
+        DEFAULT_ENCRYPTION_KEY
     );
     file.write_str(&content)?;
     pw_entry_file.write_str("[]")?;

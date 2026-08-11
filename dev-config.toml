@@ -1,2 +1,3 @@
 password_vault_path = "~/.pwtool/config.json" 
 vault_file_type = "json"
+encryption_key = "magickey"

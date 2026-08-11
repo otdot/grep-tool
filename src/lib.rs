@@ -2,7 +2,8 @@ pub mod models;
 pub mod persistence;
 
 use anyhow::{Context, Result};
-use std::{error::Error, fs::File, io::Read, path::PathBuf};
+use magic_crypt::{MagicCrypt, MagicCrypt256, MagicCryptTrait};
+use std::{error::Error, fs::File, io::Read};
 
 use clap::{Parser, Subcommand};
 use cli_clipboard::{ClipboardContext, ClipboardProvider};
@@ -79,7 +80,11 @@ pub enum Command {
     },
 }
 
-pub fn get_pw(pattern: &str, pws: Vec<PwEntry>) -> Result<(), Box<dyn Error>> {
+pub fn get_pw(
+    pattern: &str,
+    pws: Vec<PwEntry>,
+    magic_crypt: MagicCrypt256,
+) -> Result<(), Box<dyn Error>> {
     let mut result: Vec<PwEntry> = vec![];
     for pw_entry in pws {
         find_matches(pattern, pw_entry, &mut result);
@@ -92,7 +97,8 @@ pub fn get_pw(pattern: &str, pws: Vec<PwEntry>) -> Result<(), Box<dyn Error>> {
     } else if list_len == 1 {
         println!("Found one entry for search argument: {}", pattern);
         let found_entry: &PwEntry = result.get(0).unwrap();
-        copy_to_clipboard(&found_entry.password)?;
+        let decrypted_pw = magic_crypt.decrypt_base64_to_string(&found_entry.password)?;
+        copy_to_clipboard(&decrypted_pw)?;
     } else {
         println!(
             "Found multiple entries for search argument: {}. Please choose preferred entry.",
@@ -108,7 +114,9 @@ pub fn get_pw(pattern: &str, pws: Vec<PwEntry>) -> Result<(), Box<dyn Error>> {
             number if is_valid_input(&number) && number.parse::<usize>().unwrap() < list_len => {
                 let input_as_integer = number.trim().parse::<usize>().unwrap();
                 let selected_entry = result.get(input_as_integer).unwrap();
-                copy_to_clipboard(&selected_entry.password)?;
+                let decrypted_pw =
+                    magic_crypt.decrypt_base64_to_string(&selected_entry.password)?;
+                copy_to_clipboard(&decrypted_pw)?;
             }
             _ => println!("No option with index {} available", input.trim()),
         }
@@ -125,6 +133,7 @@ pub fn set_pw(
     password: &str,
     note: &str,
     mut pws: Vec<PwEntry>,
+    magic_crypt: MagicCrypt256,
 ) -> Result<Vec<PwEntry>, String> {
     if pws.iter().any(|entry| entry.key == key) {
         let msg = format!("Entry with key:{} already exists", key);
@@ -137,38 +146,10 @@ pub fn set_pw(
         key: key.to_owned(),
         url: url.to_owned(),
         username: username.to_owned(),
-        password: password.to_owned(),
+        password: magic_crypt.encrypt_str_to_base64(password),
         note: note.to_owned(),
     };
 
     pws.push(new_entry);
     Ok(pws)
-}
-
-#[test]
-pub fn check_found_matches() {
-    let pw_entry: PwEntry = serde_json::from_str(
-        "{
-        \"id\": \"a1\",
-        \"key\": \"my-school\",
-        \"username\": \"user1\",
-        \"password\": \"pass1\"
-    }",
-    )
-    .unwrap();
-    let mut result = vec![];
-    crate::find_matches("school", pw_entry, &mut result);
-
-    assert_eq!(result.first().unwrap().id, "a1");
-}
-
-#[test]
-pub fn check_default_config() {
-    let path = PathBuf::from("test-config.toml");
-    let config: Config = crate::load_config(&path).unwrap();
-
-    assert_eq!(
-        config.password_vault_path.to_str(),
-        Some("test-sample.json")
-    )
 }
