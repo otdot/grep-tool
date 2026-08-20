@@ -8,6 +8,13 @@ static DEFAULT_FILE_CONTENTS: &str = r#"
 password_vault_path = "test-sample.json"
 vault_file_type = "json"
 encryption_key = "magickey"
+[auto_generated_pws]
+word_length = 2
+items = [
+    "santA1.",
+    "k3kkoneN!",
+    "autob4HN=",
+]
 "#;
 
 #[test]
@@ -64,7 +71,7 @@ fn find_content_in_file_when_empty_string() -> Result<(), Box<dyn std::error::Er
 }
 
 #[test]
-fn set_content_when_missing_fields() -> Result<(), Box<dyn std::error::Error>> {
+fn set_content_when_missing_arguments() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.toml")?;
     file.write_str(DEFAULT_FILE_CONTENTS)?;
     let mut cmd = cargo_bin_cmd!("pwtool");
@@ -72,8 +79,6 @@ fn set_content_when_missing_fields() -> Result<(), Box<dyn std::error::Error>> {
     cmd.arg("--c")
         .arg(file.path())
         .arg("set")
-        .arg("--k")
-        .arg("key")
         .arg("--u")
         .arg("username");
 
@@ -112,7 +117,7 @@ fn set_content_in_file() -> Result<(), Box<dyn std::error::Error>> {
     let file = assert_fs::NamedTempFile::new("sample.txt")?;
     let pw_entry_file = assert_fs::NamedTempFile::new("test-entries.json")?;
     let content = format!(
-        "password_vault_path = \"{}\"\nvault_file_type = \"json\"\nencryption_key = \"{}\"",
+        "password_vault_path = \"{}\"\nvault_file_type = \"json\"\nencryption_key = \"{}\"\n[auto_generated_pws]\nword_length = 2\nitems = [\n\"santA1.\",\n\"k3kkoneN!\",\n\"autob4HN=\",\n]",
         &pw_entry_file.path().display(),
         DEFAULT_ENCRYPTION_KEY
     );

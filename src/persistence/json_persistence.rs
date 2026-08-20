@@ -1,6 +1,5 @@
 use crate::{models::PwEntry, persistence::PersistenceLayer};
 use anyhow::{Result, anyhow};
-use magic_crypt::MagicCrypt256;
 use serde_json;
 use std::{
     error::Error,
