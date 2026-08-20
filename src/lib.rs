@@ -2,8 +2,13 @@ pub mod models;
 pub mod persistence;
 
 use anyhow::{Context, Result};
-use magic_crypt::{MagicCrypt, MagicCrypt256, MagicCryptTrait};
-use std::{error::Error, fs::File, io::Read};
+use magic_crypt::{MagicCrypt256, MagicCryptTrait};
+use std::{
+    error::Error,
+    fs::File,
+    io::Read,
+    time::{SystemTime, UNIX_EPOCH},
+};
 
 use clap::{Parser, Subcommand};
 use cli_clipboard::{ClipboardContext, ClipboardProvider};
@@ -53,7 +58,7 @@ pub fn copy_to_clipboard(val: &str) -> Result<(), Box<dyn Error>> {
 
 #[derive(Parser)]
 pub struct Cli {
-    #[arg(long, default_value = "dev-config.toml", alias = "c")]
+    #[arg(short, long, default_value = "dev-config.toml", alias = "c")]
     pub config_path: std::path::PathBuf,
     #[command(subcommand)]
     pub cmd: Command,
@@ -70,7 +75,7 @@ pub enum Command {
         #[arg(long, alias = "u")]
         username: String,
         #[arg(long, alias = "p")]
-        password: String,
+        password: Option<String>,
         #[arg(long, default_value = "", alias = "n")]
         note: String,
     },
@@ -152,4 +157,29 @@ pub fn set_pw(
 
     pws.push(new_entry);
     Ok(pws)
+}
+
+pub fn transform_varying_case(string: String) {}
+
+pub fn generate_password_from_config(config: &Config) -> Result<Vec<String>, Box<dyn Error>> {
+    let auto_generated_pw_conf = &config.auto_generated_pws;
+
+    // used for getting a "random" number
+    let system_time = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
+    let max_index = u64::try_from(auto_generated_pw_conf.items.len())?;
+    let mut items_vec_index = system_time % &max_index;
+    let mut password_items: Vec<String> = vec![];
+
+    for _ in 0..auto_generated_pw_conf.word_length {
+        let index = items_vec_index.try_into().unwrap_or(0);
+        let item_to_add = auto_generated_pw_conf.items.clone().into_iter().nth(index);
+        if let Some(item) = item_to_add {
+            items_vec_index = u64::try_from(item.len())? % &max_index;
+            password_items.push(item);
+        } else {
+            panic!("item with index {} was not found", index)
+        }
+    }
+
+    Ok(password_items)
 }

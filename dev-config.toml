@@ -1,3 +1,11 @@
 password_vault_path = "~/.pwtool/config.json" 
 vault_file_type = "json"
 encryption_key = "magickey"
+
+[auto_generated_pws]
+word_length = 2
+items = [
+    "santA1.",
+    "k3kkoneN!",
+    "autob4HN=",
+]

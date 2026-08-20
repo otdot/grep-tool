@@ -2,7 +2,6 @@ mod csv_persistence;
 mod json_persistence;
 
 use anyhow::Result;
-use magic_crypt::MagicCrypt256;
 use std::{
     error::Error,
     path::{PathBuf},

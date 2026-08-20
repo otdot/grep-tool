@@ -17,7 +17,6 @@ impl PersistenceLayer for CsvPersistence {
         for result in reader.records() {
             let record = result.map_err(|e| anyhow!("CSV Read Error: {}", e))?;
 
-            // Assuming the order in CSV is: id, username, password_hash
             if record.len() >= 4 {
                 let cred = PwEntry {
                     id: record.get(0).ok_or("Missing ID")?.to_string(),
@@ -50,7 +49,6 @@ impl PersistenceLayer for CsvPersistence {
             .has_headers(true) // Write headers
             .from_writer(file);
 
-        // Write headers (important for schema definition)
         wtr.write_record(&["id", "key", "url", "username", "password", "note"])?;
 
         for cred in pws {

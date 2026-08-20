@@ -24,4 +24,11 @@ pub struct Config {
     pub password_vault_path: PathBuf,
     pub vault_file_type: VaultFileType,
     pub encryption_key: String,
+    pub auto_generated_pws: AutoGenPwConfig
+}
+
+#[derive(Deserialize)]
+pub struct AutoGenPwConfig {
+    pub word_length: u64,
+    pub items: Vec<String>
 }

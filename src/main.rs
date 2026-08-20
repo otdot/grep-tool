@@ -28,7 +28,11 @@ fn main() -> Result<(), Box<dyn Error>> {
             password,
             note,
         } => {
-            let new_pws = pwtool::set_pw(&key, &url, &username, &password, &note, pws, mc)?;
+            let pw = match &password {
+                Some(user_pw) => user_pw,
+                _ => &pwtool::generate_password_from_config(&config)?.join(""),
+            };
+            let new_pws = pwtool::set_pw(&key, &url, &username, &pw, &note, pws, mc)?;
             persistence.save(&config.password_vault_path, &new_pws)?;
             println!("Successfully saved new credentials for key '{}'.", &key);
         }
